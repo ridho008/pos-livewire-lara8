@@ -28,9 +28,12 @@
                         </tr>
                      </thead>
                      <tbody>
+                        <?php 
+                        $no = 1;
+                        ?>
                         @foreach($products as $key => $product)
                            <tr>
-                              <td>{{ $key + 1 }}</td>
+                              <td>{{ $key + $products->firstitem() }}</td>
                               <td>{{ $product->name }}</td>
                               <td>
                                  <img src="{{ asset('storage/images/'.$product->img) }}" alt="{{ $product->name }}" class="img-fluid" style="width: 200px;">

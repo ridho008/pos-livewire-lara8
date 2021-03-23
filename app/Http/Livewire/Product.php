@@ -15,6 +15,8 @@ class Product extends Component
 
   public $name, $img, $description, $qty, $price;
   public $paginate = 5;
+  protected $paginationTheme = 'bootstrap';
+  
     public function render()
     {
       $products = ProductModel::orderBy('created_at', 'desc')->paginate($this->paginate);
