@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Product as ProductModel;
 use Carbon\Carbon;
 
+// Mengunakan packages https://github.com/darryldecode/laravelshoppingcart#conditions = untuk cart
 class Cart extends Component
 {
    public $tax = "0%";
@@ -97,5 +98,55 @@ class Cart extends Component
    public function disableTax()
    {
       $this->tax = "0%";
+   }
+
+   // Menambahkan jumlah item
+   public function increaseItem($rowId)
+   {
+      $productId = substr($rowId, 4,5);
+      $product = ProductModel::findOrFail($productId);
+      $cart = \Cart::session(Auth()->id())->getContent();
+
+      $getItemById = $cart->whereIn('id', $rowId);
+      // cek di hal cart, batasi jumlah qtynya
+      if($product->qty == $getItemById[$rowId]->quantity) {
+         session()->flash('error', 'Maksimal jumlah product '. $product->name .$product->qty);
+      } else {
+         \Cart::session(Auth()->id())->update($rowId, [
+            'quantity' => [
+               'relative' => true,
+               'value' => 1
+            ]
+         ]);
+
+      }
+
+   }
+
+   // Mengurangi jumlah item
+   public function decreaseItem($rowId)
+   {
+      $product = \Cart::session(Auth()->id())->getContent();
+      $cekItemId = $product->whereIn('id', $rowId);
+      // dd($cekItemId[$rowId]->quantity);
+
+      // Jika qtynya jumlahnya 1, maka hapus product di cart
+      if($cekItemId[$rowId]->quantity == 1)
+      {
+         \Cart::session(Auth()->id())->remove($rowId);
+      } else {
+         \Cart::session(Auth()->id())->update($rowId, [
+            'quantity' => [
+               'relative' => true,
+               'value' => -1
+            ]
+         ]);
+      }
+   }
+
+   // Menhapus item by id
+   public function removeItem($rowId)
+   {
+      \Cart::session(Auth()->id())->remove($rowId);
    }
 }

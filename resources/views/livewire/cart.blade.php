@@ -11,7 +11,7 @@
                     <div class="card-body">
                       <h5 class="card-title">{{ $product->name }}</h5>
                       {{-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> --}}
-                      <button wire:click="addItem({{ $product->id }})" class="btn btn-primary">Add to Cart</button>
+                      <button wire:click="addItem({{ $product->id }})" class="btn btn-primary btn-block btn-sm">Add to Cart</button>
                     </div>
                   </div>
                </div>
@@ -24,6 +24,11 @@
       <div class="card">
          <div class="card-header"><h5>Cart</h5></div>
          <div class="card-body">
+            @if (session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
             <table class="table table-sm table-bordered">
                <thead>
                   <tr>
@@ -34,9 +39,13 @@
                </thead>
                <tbody>
                   @forelse($carts as $key => $cart)
-                  <tr>
-                     <td></td>
-                     <td>{{ $cart['name'] }} || {{ $cart['qty'] }}</td>
+                  <tr class="text-center">
+                     <td>{{ $key + 1 }}</td>
+                     <td>{{ $cart['name'] }}<br> Qty <strong>{{ $cart['qty'] }}</strong>
+                        <button wire:click="increaseItem('{{ $cart['rowId'] }}')" class="btn-xs">+</button>
+                        <button wire:click="decreaseItem('{{ $cart['rowId'] }}')" class="btn-xs">-</button>
+                        <button wire:click="removeItem('{{ $cart['rowId'] }}')" class="btn-xs">X</button>
+                     </td>
                      <td>{{ $cart['pricesingle'] }}</td>
                   </tr>
                   @empty
