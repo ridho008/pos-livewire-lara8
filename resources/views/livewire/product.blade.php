@@ -17,7 +17,7 @@
                </div>
                <div class="table-responsive">
                   <table class="table table-striped table-bordered">
-                     <thead>
+                     <thead class="bg-primary text-light">
                         <tr>
                            <th>No</th>
                            <th>Name</th>

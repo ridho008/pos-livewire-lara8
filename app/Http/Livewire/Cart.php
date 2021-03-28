@@ -76,17 +76,27 @@ class Cart extends Component
    public function addItem($id)
    {
       $rowId = "Cart".$id;
+      $productId = substr($rowId, 4,5);
+      $product = ProductModel::findOrFail($productId);
       $cart = \Cart::session(Auth()->id())->getContent();
       $cekItemId = $cart->whereIn('id', $rowId);
       // dd($cekItemId);
       if($cekItemId->isNotEmpty()) {
-         \Cart::session(Auth()->id())->update($rowId, [
-            'quantity' => [
-               'relative' => true,
-               'value' => 1
-            ]
-         ]);
+         // jika qty sama dengan qty yang diklik dan mencapai maksimal qty di DB
+         if($product->qty == $cekItemId[$rowId]->quantity) {
+            session()->flash('error', 'Maksimal jumlah product '. $product->name .$product->qty);
+         } else {
+            // jika masih ada, terus tambahkan
+            \Cart::session(Auth()->id())->update($rowId, [
+               'quantity' => [
+                  'relative' => true,
+                  'value' => 1
+               ]
+            ]);
+
+         }
       } else {
+         // jika belum menambahkan di cart
          $product = ProductModel::findOrFail($id);
          \Cart::session(Auth()->id())->add([
             'id' => "Cart".$product->id,
