@@ -1,10 +1,17 @@
 <div class="row">
    <div class="col-md-8">
       <div class="card">
-         <div class="card-header"><h5>Products List</h5></div>
+         <div class="card-header"><h5>Products List</h5>
+          <div class="input-group mb-3">
+            <input type="text" wire:model="search" class="form-control" placeholder="Search product">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+            </div>
+          </div>
+         </div>
          <div class="card-body">
             <div class="row">
-               @foreach($products as $product)
+               @forelse($products as $product)
                <div class="col-md-3">
                   <div class="card">
                     <img src="{{ asset('storage/images/'.$product->img) }}" class="card-img-top" alt="{{ $product->name }}">
@@ -15,7 +22,16 @@
                     </div>
                   </div>
                </div>
-               @endforeach
+               @empty
+               <div class="col-md-12">
+                 <h4 class="text-danger">Products not found</h4>
+               </div>
+               @endforelse
+            </div>
+            <div class="row">
+              <div class="col-md-5 offset-md-5 mt-4">
+                {{ $products->links() }}
+              </div>
             </div>
          </div>
       </div>
@@ -46,7 +62,7 @@
                         <button wire:click="decreaseItem('{{ $cart['rowId'] }}')" class="btn-xs">-</button>
                         <button wire:click="removeItem('{{ $cart['rowId'] }}')" class="btn-xs">X</button>
                      </td>
-                     <td>{{ $cart['pricesingle'] }}</td>
+                     <td>{{ number_format($cart['pricesingle'], 0, ',', '.') }}</td>
                   </tr>
                   @empty
                      <td colspan="3">Empty Cart</td>
@@ -59,9 +75,9 @@
       <div class="card">
          <div class="card-body">
             <h4 class="font-weight-bold">Cart Summary</h4>
-            <h4 class="font-weight-bold">Sub Total : {{ $summary['subTotal'] }}</h4>
-            <h4 class="font-weight-bold">Pajak : {{ $summary['pajak'] }}</h4>
-            <h4 class="font-weight-bold">Total : {{ $summary['total'] }}</h4>
+            <h4 class="font-weight-bold">Sub Total : {{ number_format($summary['subTotal'], 0, ',', '.') }}</h4>
+            <h4 class="font-weight-bold">Pajak : {{ number_format($summary['pajak'], 0, ',', '.') }}</h4>
+            <h4 class="font-weight-bold">Total : {{ number_format($summary['total'], 0, ',', '.') }}</h4>
             <div>
                <button wire:click="enableTax" class="btn btn-secondary btn-block">Add Tax</button>
                <button wire:click="disableTax" class="btn btn-danger btn-block">Remove Tax</button>

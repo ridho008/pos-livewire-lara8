@@ -5,15 +5,25 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Product as ProductModel;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 
 // Mengunakan packages https://github.com/darryldecode/laravelshoppingcart#conditions = untuk cart
 class Cart extends Component
 {
+   use WithPagination;
+   public $search = '';
+   public $paginate = 8;
+   protected $paginationTheme = 'bootstrap';
    public $tax = "0%";
+
+   public function updatingSearch()
+   {
+      $this->resetPage();
+   }
 
    public function render()
    {
-      $products = ProductModel::orderBy('created_at', 'desc')->get();
+      $products = ProductModel::where('name', 'like', '%'.$this->search.'%')->orderBy('name', 'desc')->paginate($this->paginate);
       $condition = new \Darryldecode\Cart\CartCondition([
           'name' => 'pajak',
           'type' => 'tax',
