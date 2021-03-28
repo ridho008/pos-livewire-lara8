@@ -14,7 +14,7 @@
                @forelse($products as $product)
                <div class="col-md-3">
                   <div class="card">
-                    <img src="{{ asset('storage/images/'.$product->img) }}" class="card-img-top" alt="{{ $product->name }}">
+                    <img src="{{ asset('storage/images/'.$product->img) }}" style="object-fit: contain;width: 100%;height: 125px;" alt="{{ $product->name }}">
                     <div class="card-body">
                       <h5 class="card-title">{{ $product->name }}</h5>
                       {{-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> --}}
