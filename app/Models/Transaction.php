@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
    protected $table = 'transactions';
+   protected $primaryKey = 'invoice_number';
+   public $incrementing = false;
+   protected $keyType = 'string';
+   protected $fillable = ['invoice_number', 'user_id', 'pay', 'total'];
    use HasFactory;
 
    public function product()

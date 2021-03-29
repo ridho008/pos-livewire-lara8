@@ -58,6 +58,11 @@
                     {{ session('error') }}
                 </div>
             @endif
+            @if (session()->has('success'))
+               <div class="alert alert-success">
+                   {{ session('success') }}
+               </div>
+           @endif
             <table class="table table-sm table-bordered">
                <thead>
                   <tr>
@@ -130,10 +135,10 @@
             </div>
             <div class="row">
               <div class="col-md-4">
-                <button wire:click="enableTax" class="btn btn-secondary btn-block">Add Tax</button>
+                <button type="button" wire:click="enableTax" class="btn btn-secondary btn-block">Add Tax</button>
               </div>
               <div class="col-md-4">
-                <button wire:click="disableTax" class="btn btn-danger btn-block">Remove Tax</button>
+                <button type="button" wire:click="disableTax" class="btn btn-danger btn-block">Remove Tax</button>
               </div>
               <div class="col-md-4">
                 <button wire:ignore type="submit" id="saveButton" disabled class="btn btn-success btn-block">Save</button>

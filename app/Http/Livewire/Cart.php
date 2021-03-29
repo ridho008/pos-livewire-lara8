@@ -4,9 +4,12 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Product as ProductModel;
+use App\Models\Transaction;
+use App\Models\PruductTransaction;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 use DB;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 // Mengunakan packages https://github.com/darryldecode/laravelshoppingcart#conditions = untuk cart
 class Cart extends Component
@@ -208,6 +211,39 @@ class Cart extends Component
                // mengurangi jumlah qty di TB products
                $product->decrement('qty', $cart['quantity']);
             }
+
+            // generate id menggunakan = laravel id generator
+            $config = [
+                'table' => 'transactions',
+                'length' => 10,
+                'prefix' => 'INV-',
+                'field' => 'invoice_number',
+            ];
+
+            // now use it
+            $id = IdGenerator::generate($config);
+
+            // insert ke TB Transactions
+            Transaction::create([
+               'invoice_number' => $id,
+               'user_id' => Auth()->id(),
+               'pay' => $bayar,
+               'total' => $cartTotal,
+            ]);
+
+            // insert ke TB products_transactions
+            foreach ($filterCart as $cart) {
+               PruductTransaction::create([
+                  'product_id' => $cart['id'],
+                  'invoice_number' => $id,
+                  'qty' => $cart['quantity'],
+               ]);
+            }
+
+            // mengkosongkan table cart
+            \Cart::session(Auth()->id())->clear();
+            $this->payment = 0;
+            // return session()->flash('success', 'Berhasil transaksi product.');
 
             DB::commit();
          } catch (\Throwable $th) {
