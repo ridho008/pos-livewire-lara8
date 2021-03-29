@@ -13,12 +13,18 @@ class Cart extends Component
    use WithPagination;
    public $search = '';
    public $paginate = 8;
+   public $payment = 0;
    protected $paginationTheme = 'bootstrap';
    public $tax = "0%";
 
    public function updatingSearch()
    {
       $this->resetPage();
+   }
+
+   public function handleSubmit()
+   {
+      dd($this->payment);
    }
 
    public function render()
