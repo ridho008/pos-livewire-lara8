@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Product as ProductModel;
 use Carbon\Carbon;
 use Livewire\WithPagination;
+use DB;
 
 // Mengunakan packages https://github.com/darryldecode/laravelshoppingcart#conditions = untuk cart
 class Cart extends Component
@@ -20,11 +21,6 @@ class Cart extends Component
    public function updatingSearch()
    {
       $this->resetPage();
-   }
-
-   public function handleSubmit()
-   {
-      dd($this->payment);
    }
 
    public function render()
@@ -103,16 +99,21 @@ class Cart extends Component
          }
       } else {
          // jika belum menambahkan di cart
-         $product = ProductModel::findOrFail($id);
-         \Cart::session(Auth()->id())->add([
-            'id' => "Cart".$product->id,
-            'name' => $product->name,
-            'price' => $product->price,
-            'quantity' => 1,
-            'attributes' => [
-               'added_at' => Carbon::now()
-            ]
-         ]);
+         // $product = ProductModel::findOrFail($id);
+         if($product->qty == 0) {
+            session()->flash('error', 'Qty Product 0, tunggu hingga qty tersedia.');
+         } else {
+            \Cart::session(Auth()->id())->add([
+               'id' => "Cart".$product->id,
+               'name' => $product->name,
+               'price' => $product->price,
+               'quantity' => 1,
+               'attributes' => [
+                  'added_at' => Carbon::now()
+               ]
+            ]);
+
+         }
       }
    }
 
@@ -138,13 +139,16 @@ class Cart extends Component
       if($product->qty == $getItemById[$rowId]->quantity) {
          session()->flash('error', 'Maksimal jumlah product '. $product->name .$product->qty);
       } else {
-         \Cart::session(Auth()->id())->update($rowId, [
-            'quantity' => [
-               'relative' => true,
-               'value' => 1
-            ]
-         ]);
-
+         if($product->qty == 0) {
+            session()->flash('error', 'Qty Product '. $product->name .' 0, tunggu hingga qty tersedia.');
+         } else {
+            \Cart::session(Auth()->id())->update($rowId, [
+               'quantity' => [
+                  'relative' => true,
+                  'value' => 1
+               ]
+            ]);
+         }
       }
 
    }
@@ -174,5 +178,42 @@ class Cart extends Component
    public function removeItem($rowId)
    {
       \Cart::session(Auth()->id())->remove($rowId);
+   }
+
+   public function handleSubmit()
+   {
+      $cartTotal = \Cart::session(Auth()->id())->getTotal();
+      $bayar = $this->payment;
+      $kembalian = (int) $cartTotal - (int) $bayar;
+
+      if($kembalian >= 0) {
+         DB::beginTransaction();
+
+         try {
+            $allCart = \Cart::session(Auth()->id())->getContent();
+            $filterCart = $allCart->map(function ($item) {
+               return [
+                  'id' => substr($item->id, 4,5),
+                  'quantity' => $item->quantity
+               ];
+            });
+
+            foreach ($filterCart as $cart) {
+               $product = ProductModel::find($cart['id']);
+
+               if($product->qty === 0) {
+                  return session()->flash('error', 'jumlah item kurang');
+               }
+
+               // mengurangi jumlah qty di TB products
+               $product->decrement('qty', $cart['quantity']);
+            }
+
+            DB::commit();
+         } catch (\Throwable $th) {
+            DB::rollback();
+            return session()->flash('error', $th);
+         }
+      }
    }
 }

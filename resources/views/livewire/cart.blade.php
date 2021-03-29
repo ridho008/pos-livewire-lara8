@@ -12,6 +12,18 @@
          <div class="card-body">
             <div class="row">
                @forelse($products as $product)
+               @if($product->qty == 0)
+               <div class="col-md-3 mb-4">
+                  <div class="card shadow bg-white rounded">
+                    <img src="{{ asset('storage/images/'.$product->img) }}" style="object-fit: cover;width: 100%;height: 125px; object-position: center;" alt="{{ $product->name }}">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ $product->name }}</h5>
+                      <small class="text-danger">Qty sedang kosong</small>
+                      <button disabled wire:click="addItem({{ $product->id }})" class="btn btn-primary btn-block btn-sm">Add to Cart</button>
+                    </div>
+                  </div>
+               </div>
+               <?php else : ?>
                <div class="col-md-3 mb-4">
                   <div class="card shadow bg-white rounded">
                     <img src="{{ asset('storage/images/'.$product->img) }}" style="object-fit: cover;width: 100%;height: 125px; object-position: center;" alt="{{ $product->name }}">
@@ -22,6 +34,7 @@
                     </div>
                   </div>
                </div>
+               <?php endif; ?>
                @empty
                <div class="col-md-12">
                  <h4 class="text-danger">Products not found</h4>
@@ -107,11 +120,11 @@
                 </div>
                 <div class="form-group">
                   <label>Payment</label>
-                  <h3 id="paymentText">Rp.0</h3>
+                  <h3 id="paymentText" wire:ignore>Rp.0</h3>
                 </div>
                 <div class="form-group">
                   <label>Kembalian</label>
-                  <h3 id="kembalianText">Rp.0</h3>
+                  <h3 id="kembalianText" wire:ignore>Rp.0</h3>
                 </div>
               </div>
             </div>
