@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Product;
 use App\Http\Livewire\Cart;
+use App\Http\Livewire\History;
 use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Auth\Logout;
@@ -31,6 +32,7 @@ Route::group(['middleware' => ['guest']], function() {
 Route::group(['middleware' => ['auth']], function() {
    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
    Route::get('/products', Product::class)->name('product.index');
+   Route::get('/history', History::class)->name('history.index');
    Route::get('/cart', Cart::class)->name('cart.index');
    Route::get('/logout', Logout::class)->name('logout');
 });

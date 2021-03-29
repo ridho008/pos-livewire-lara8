@@ -41,6 +41,9 @@
                         <li class="nav-item{{ (Request::path() == 'cart') ? ' active' : '' }}">
                             <a class="nav-link" href="{{ route('cart.index') }}">Cart</a>
                         </li>
+                        <li class="nav-item{{ (Request::path() == 'history') ? ' active' : '' }}">
+                            <a class="nav-link" href="{{ route('history.index') }}">History</a>
+                        </li>
                         @endauth
                     </ul>
 
